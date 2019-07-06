@@ -1,4 +1,4 @@
-import { GraphQLServer } from "graphql-yoga";
+import { GraphQLServer, PubSub } from "graphql-yoga";
 
 import db from "./db";
 
@@ -7,6 +7,7 @@ import Mutation from "./resolvers/Mutation";
 import User from "./resolvers/User";
 import Post from "./resolvers/Post";
 import Comment from "./resolvers/Comment";
+import Subscription from './resolvers/Subscription';
 
 // Scalar type = String, Boolean, Int, Float, ID
 
@@ -16,20 +17,27 @@ import Comment from "./resolvers/Comment";
 // createPost(title: String!, body: String!, published: Boolean!, author: ID!):Post!
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Resolvers
-const resolvers = {};
+// Resolvers - we moved them to separate files
+// const resolvers = {};
+
+// creating new instance and pass it to all resolvers
+const pubsub = new PubSub();
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 const server = new GraphQLServer({
   typeDefs: "./src/schema.graphql",
   resolvers: {
     Query,
     Mutation,
+    Subscription,
     User,
     Post,
     Comment
   },
   context: {
-    db: db
+    // accessible from all resolvers
+    db: db,
+    pubsub
   }
 });
 

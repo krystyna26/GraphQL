@@ -37,7 +37,7 @@ const posts = [
     id: "14",
     title: "Spring",
     body: "Flowers started flourish",
-    published: false,
+    published: true,
     author: "3"
   }
 ];

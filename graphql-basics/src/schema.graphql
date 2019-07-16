@@ -1,8 +1,8 @@
-# // Type definitions (schema)
 type Query {
   users(query: String): [User!]!
   posts(query: String): [Post!]!
   comments: [Comment!]!
+  me: User!
   post: Post!
 }
 
@@ -10,17 +10,16 @@ type Mutation {
   createUser(data: CreateUserInput!): User!
   deleteUser(id: ID!): User!
   updateUser(id: ID!, data: UpdateUserInput!): User!
-  createPost(post: CreatePostInput!): Post!
+  createPost(data: CreatePostInput!): Post!
   deletePost(id: ID!): Post!
   updatePost(id: ID!, data: UpdatePostInput!): Post!
-  createComment(comment: CreateCommentInput!): Comment!
+  createComment(data: CreateCommentInput!): Comment!
   deleteComment(id: ID!): Comment!
   updateComment(id: ID!, data: UpdateCommentInput!): Comment!
 }
 
 type Subscription {
-  count: Int!
-  comment(postId: ID!): Comment!
+  comment(postId: ID!): CommentSubscriptionPayload!
   post: PostSubscriptionPayload!
 }
 
@@ -84,7 +83,18 @@ type Comment {
   post: Post!
 }
 
+enum MutationType {
+  CREATED
+  UPDATED
+  DELETED
+}
+
 type PostSubscriptionPayload {
-    mutation: String!
-    data: Post!
+  mutation: MutationType!
+  data: Post!
+}
+
+type CommentSubscriptionPayload {
+  mutation: MutationType!
+  data: Comment!
 }

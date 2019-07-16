@@ -1,38 +1,37 @@
 const Subscription = {
-  count: {
-    subscribe(paren,args, { pubsub }, info){
-      let count = 0;
+  // count: {
+  //   subscribe(paren, args, { pubsub }, info) {
+  //     let count = 0;
 
-      // 1000 miliseconds === 1 second
-      setInterval(() => {
-        count++;
-        pubsub.publish('count', {
-        count: count
-        })
-      }, 1000)
-    
+  //     // 1000 miliseconds === 1 second
+  //     setInterval(() => {
+  //       count++;
+  //       pubsub.publish("count", {
+  //         count: count
+  //       });
+  //     }, 1000);
 
-      return pubsub.asyncIterator("count")
-    }
-  },
+  //     return pubsub.asyncIterator("count");
+  //   }
+  // },
 
   comment: {
-    subscribe(parent, {postId}, { db, pubsub }, info){
-      const post = db.posts.find((post) => post.id === postId && post.published);
+    subscribe(parent, { postId }, { db, pubsub }, info) {
+      const post = db.posts.find(post => post.id === postId && post.published);
 
-      if(!post){
-        throw new Error("Post not found")
+      if (!post) {
+        throw new Error("Post not found");
       }
 
-      return pubsub.asyncIterator(`comment ${postId}`)
+      return pubsub.asyncIterator(`comment ${postId}`);
     }
   },
 
   post: {
-    subscribe(parent, args, { pubsub}, info){
-      return pubsub.asyncIterator(`post}`)
+    subscribe(parent, args, { pubsub }, info) {
+      return pubsub.asyncIterator(`post}`);
     }
   }
-}
+};
 
-export {Subscription as default }
+export { Subscription as default };

@@ -166,6 +166,8 @@ type Stop {
 }
 ```
 
+If you keep getting errors like: `ERROR: relation "default$default.User" does not exist` when I try to deploy prisma run:
+`prisma delete` command to clean that up. It's essentially the opposite of prisma deploy. After, you should be able to deploy again
 
 
 https://xd.adobe.com/view/b8261d75-dcfe-446c-4a1e-bb20f600d84c-ce17/screen/bba7cc4e-5990-482d-b6e7-334b03950d92/Web-1366-8

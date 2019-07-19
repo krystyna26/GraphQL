@@ -166,8 +166,63 @@ type Stop {
 }
 ```
 
+DEBUGING:
+
 If you keep getting errors like: `ERROR: relation "default$default.User" does not exist` when I try to deploy prisma run:
 `prisma delete` command to clean that up. It's essentially the opposite of prisma deploy. After, you should be able to deploy again
+
+
+If after deploying `$ prisma deploy` you see   `Could not connect to server at http://localhost:4466. Please check if your server is running.` check if you change `schema: schema.graphql` in docker-compose.yml file to  `ssl: true`
+ 
+
+Always check if you're in right direcories /prisma
+
+INSTALLING prisma-binding:
+
+from graphql-prisma directory install: `npm install prisma-binding`
+from graphql-basics copy: src, .babelrc, package-json(s), node-modules into graphql-prisma
+create file: `prisma.js` inside grapql-prisma/src and paste:
+```
+import { Prisma } from 'prisma-binding';
+
+const prisma = new Prisma({
+  typeDefs: "src/generated/prisma.graphql",
+  endpoint: "localhost:4466",
+
+})
+```
+
+INSTALLING graphql-cli:
+run: `npm install graphql-cli`
+in graphql-prisma create new file: `.graphqlconfig` and paste:
+```
+{
+  "projects": {
+    "prisma": {
+      "schemaPath": "src/generated/prisma.graphql",
+      "extenstions": {
+        "endpoints": {
+          "default": "http://localhost:4466"
+        }
+      }
+    }
+  }
+}
+```
+create folder `generated` under /src directory
+
+
+in package.json under "scripts" object add: "get-schema": "graphql get-schema -p prisma"
+
+In terminal run: `npm run get-schema`. That should create a file prisma.graphql with all schemas in it. We will never going to use it except if we make changes into datamodel.graphql then we redeploy prisma and run above command again to fetch updated schema
+
+...
+
+run `npm start` to start program
+
+
+
+
 
 
 https://xd.adobe.com/view/b8261d75-dcfe-446c-4a1e-bb20f600d84c-ce17/screen/bba7cc4e-5990-482d-b6e7-334b03950d92/Web-1366-8

@@ -105,19 +105,9 @@ type User {
   from: String
   avatar_url: Photos
   email: String! @unique
-  password_hash: String!
+  password: String!
   comments: [Comment!]!
-  posts: [Post!]!
   trips: [Trip!]!
-}
-
-type Post {
-  id: ID! @unique
-  title: String!
-  body: String!
-  published: Boolean!
-  author: User!
-  comments: [Comment!]!
 }
 
 type Comment {
@@ -125,6 +115,9 @@ type Comment {
   trip_id: ID!
   user_id: ID!
   content: String!
+  author: User!
+  comments: [Comment]!
+  published: Boolean!
 }
 
 type Trip {
@@ -136,17 +129,21 @@ type Trip {
   travel_ended_at: DateTime!
   stops: [Stop!]!
   comments: [Comment!]!
-  budget: Int
+  budget: Float
   num_of_people: Int
   kids: Boolean
   seniors: Boolean
   walking: Boolean
   driving: Boolean
-  fast_pace: Boolean
+  fast_pace: PaceEnum!
   rate: Int
   pictures: [Photos!]!
   times_taken: Int!
+  longitude: Float!
+  latitude: Float!
 }
+
+const PaceEnum = Object.freeze({"fast":1, "moderate":2, "low":3})
 
 type Photos {
   id: ID! @unique
@@ -163,6 +160,7 @@ type Stop {
   description: String
   cost: Float
   completed: Boolean!
+  completedAt: DateTime!
 }
 ```
 
@@ -174,7 +172,7 @@ If you keep getting errors like: `ERROR: relation "default$default.User" does no
 
 If after deploying `$ prisma deploy` you see   `Could not connect to server at http://localhost:4466. Please check if your server is running.` check if you change `schema: schema.graphql` in docker-compose.yml file to  `ssl: true`
  
-
+`npm ERR! enoent ENOENT: no such file or directory, open...`
 Always check if you're in right direcories /prisma
 
 INSTALLING prisma-binding:
@@ -220,9 +218,24 @@ In terminal run: `npm run get-schema`. That should create a file prisma.graphql 
 
 run `npm start` to start program
 
+ACCESS TO DB WITH TOKEN
+In  prisma.yml add: secret: <your_secret_string_here>
+In prisma.js add the same secret into const prisma (but here with quotes!)
+To generate token needed to http request:
+`cd prisma`
+`prisma token`
+Copy and paste token to HTTP HEADERS in http://localhost:4466/ like:
+{
+  "Authorization":"Bearer <token_here>"
+}
+And now you can have access to db again.
 
+-----
+Adding password field into User. 
+Delete prisma
+Add new property into object in .graphqlconfig: "prisma": "prisma/prisma.yml" and re-run: npm run get-schema
+Redeploy prisma
 
-
-
+Take in password -> validate password -> hash password -> generate auth token
 
 https://xd.adobe.com/view/b8261d75-dcfe-446c-4a1e-bb20f600d84c-ce17/screen/bba7cc4e-5990-482d-b6e7-334b03950d92/Web-1366-8

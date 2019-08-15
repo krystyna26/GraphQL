@@ -2,7 +2,7 @@
 
 run `npm start`
 
-go to `localhost:4000` and try writing some queries
+go to `localhost:4000` and try writing some queries:
 
 ```
 query{
@@ -19,7 +19,7 @@ query{
 }
 ```
 
-mutations
+mutations:
 
 ```
 mutation {
@@ -32,3 +32,20 @@ mutation {
 }
 ```
 
+and subscriptions:
+
+```
+subscription {
+  comment(postId: "14"){
+    mutation
+    data{
+      id
+      text
+      author {
+        id
+        name
+      }
+    }
+  }
+}
+```

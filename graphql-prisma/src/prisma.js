@@ -1,14 +1,14 @@
-import { Prisma } from 'prisma-binding'
-import { fragmentReplacements } from './resolvers/index';
+import { Prisma } from "prisma-binding";
+import { fragmentReplacements } from "./resolvers/index";
 
 const prisma = new Prisma({
-    typeDefs: 'src/generated/prisma.graphql',
-    endpoint: 'http://localhost:4466',
-    secret: "thinkpositivesecret",
-    fragmentReplacements
-})
+  typeDefs: "src/generated/prismaTrip.graphql",
+  endpoint: "http://localhost:4466/traveler/default",
+  secret: "thinkpositivesecret",
+  fragmentReplacements
+});
 
-export {prisma as default};
+export { prisma as default };
 // query, mutations, subscription, exists
 
 // null is for operational argument (needed for mutations) (it can be filter or sort)
@@ -61,8 +61,7 @@ export {prisma as default};
 //   console.log(data)
 // })
 
-
-// 1. create a new post 
+// 1. create a new post
 // 2. fetch all of the info about the author (user)
 // const createPostForUser = async (authorId, data) => {
 //   const userExists = await prisma.exists.User({
@@ -84,13 +83,13 @@ export {prisma as default};
 //       }
 //     }
 //   }, '{ author { id name email posts { id title published } } }')
-  // the above line replaced the 'user' below. Now we have to change 'return user' to post.author
-  // const user = await prisma.query.users({
-  //   where: {
-  //     id: authorId
-  //   }
+// the above line replaced the 'user' below. Now we have to change 'return user' to post.author
+// const user = await prisma.query.users({
+//   where: {
+//     id: authorId
+//   }
 
-  // }, '{ id name email posts { id title published } }')
+// }, '{ id name email posts { id title published } }')
 
 //   return post.author
 // }
@@ -120,15 +119,15 @@ export {prisma as default};
 //     // we need id for this post to fetch associated user
 //   }, '{ author { id name email posts { id title published } } }')
 
-  // const associatedUser = prisma.query.user({
-  //   where: {
-  //     // id is stored above in updatedPost obj
-  //     id: updatedPost.author.id
-  //   }
-  //   // we need to fetch all associated used with belows data
-  // }, '{ id name email posts { id title published} }')
+// const associatedUser = prisma.query.user({
+//   where: {
+//     // id is stored above in updatedPost obj
+//     id: updatedPost.author.id
+//   }
+//   // we need to fetch all associated used with belows data
+// }, '{ id name email posts { id title published} }')
 
-  // return associatedUser;
+// return associatedUser;
 //   return updatedPost.author
 // }
 
@@ -138,11 +137,10 @@ export {prisma as default};
 //   console.log('ERROR:', error.message);
 // })
 
-
 // checking if user exists
 // prisma.exists.User({
 //   id: "cjyem6eq1006i0934wderx5sy"
 // }).then((exists) => {
 //   console.log(exists);
-  
+
 // })

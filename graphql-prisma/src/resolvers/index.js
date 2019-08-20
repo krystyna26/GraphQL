@@ -1,10 +1,11 @@
-import { extractFragmentReplacements } from 'prisma-binding';
+import { extractFragmentReplacements } from "prisma-binding";
 import Query from "./Query";
 import Mutation from "./Mutation";
 import User from "./User";
 import Post from "./Post";
 import Comment from "./Comment";
-import Subscription from './Subscription';
+import Subscription from "./Subscription";
+import Trip from "./Trip";
 
 const resolvers = {
   Query,
@@ -12,8 +13,9 @@ const resolvers = {
   Subscription,
   User,
   Post,
-  Comment
-}
+  Comment,
+  Trip
+};
 
-const fragmentReplacements = extractFragmentReplacements(resolvers)
-export {resolvers, fragmentReplacements}
+const fragmentReplacements = extractFragmentReplacements(resolvers);
+export { resolvers, fragmentReplacements };

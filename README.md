@@ -1,5 +1,8 @@
 # GraphQL
 
+Create folder for your project. Inside it run: npm init with default values
+
+
 run `npm start`
 
 go to `localhost:4000` and try writing some queries:
@@ -32,7 +35,6 @@ mutation {
 }
 ```
 
-<<<<<<< HEAD
 and subscriptions:
 
 ```
@@ -45,9 +47,13 @@ subscription {
       author {
         id
         name
-=======
-installing prisma: npm install -g prisma@1.12.0
 
+
+
+INSTALLING PRISMA
+Run: npm install -g prisma@1.12.0
+
+START NEW PROJECT
 from graphql-prisma directory run: prisma init prisma (to create 3 files in graphql-prisma), with arrow choose: 'use existing db', postgresql, no, grab 'host', 'port', 'user' and 'password', number and 'name' from heroku, hit yes for use SSL, do not generate, schema.graphql
 
 inside the project the file 'datamodel.graphql' is similar to schema.graphql
@@ -108,7 +114,9 @@ updateUser(
 
 In 'datamodel.graphql' we can set customer type of user. After that we need to run 'prisma deploy' to update schema
 
-
+CREATING NEW PROJECT:
+Duplicate prisma folder. Delete docker-compose file. We need only one. Change endpoint in prisma.yml for example:
+endpoint: ```http://localhost:4466/traveler/default``` where traveler is a service name( project name), default is a stage name.
 
 ```
 type User {
@@ -178,7 +186,7 @@ type Stop {
 }
 ```
 
-DEBUGING:
+DEBUGGING:
 
 If you keep getting errors like: `ERROR: relation "default$default.User" does not exist` when I try to deploy prisma run:
 `prisma delete` command to clean that up. It's essentially the opposite of prisma deploy. After, you should be able to deploy again
@@ -187,7 +195,7 @@ If you keep getting errors like: `ERROR: relation "default$default.User" does no
 If after deploying `$ prisma deploy` you see   `Could not connect to server at http://localhost:4466. Please check if your server is running.` check if you change `schema: schema.graphql` in docker-compose.yml file to  `ssl: true`
  
 `npm ERR! enoent ENOENT: no such file or directory, open...`
-Always check if you're in right direcories /prisma
+Always check if you're in right directory /prisma
 
 INSTALLING prisma-binding:
 
@@ -212,18 +220,16 @@ in graphql-prisma create new file: `.graphqlconfig` and paste:
   "projects": {
     "prisma": {
       "schemaPath": "src/generated/prisma.graphql",
-      "extenstions": {
+      "extensions": {
         "endpoints": {
           "default": "http://localhost:4466"
         }
->>>>>>> d37547f11c77a5c9729fed35691c9d7adbdadee3
       }
     }
   }
 }
 ```
-<<<<<<< HEAD
-=======
+
 create folder `generated` under /src directory
 
 
@@ -256,4 +262,3 @@ Redeploy prisma
 Take in password -> validate password -> hash password -> generate auth token
 
 https://xd.adobe.com/view/b8261d75-dcfe-446c-4a1e-bb20f600d84c-ce17/screen/bba7cc4e-5990-482d-b6e7-334b03950d92/Web-1366-8
->>>>>>> d37547f11c77a5c9729fed35691c9d7adbdadee3

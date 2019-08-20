@@ -1,0 +1,68 @@
+type User {
+  id: ID! @unique
+  first_name: String!
+  last_name: String!
+  age: Int
+  from: String
+  avatar_url: Photos
+  email: String! @unique
+  password: String!
+  comments: [Comment!]!
+  trips: [Trip!]!
+}
+
+type Comment {
+  id: ID! @unique
+  trip: [Trip!]!
+  author: User!
+  content: String!
+  comments: [Comment!]!
+  published: Boolean!
+}
+
+type Trip {
+  id: ID! @unique
+  author: [User!]!
+  traveled_from: String!
+  traveled_to: String!
+  travel_started_at: DateTime!
+  travel_ended_at: DateTime!
+  stops: [Stop!]!
+  comments: [Comment!]!
+  budget: Float
+  num_of_people: Int
+  kids: Boolean
+  seniors: Boolean
+  walking: Boolean
+  driving: Boolean
+  pace: PaceEnum!
+  rate: Int
+  pictures: [Photos!]!
+  times_taken: Int!
+  longitude: Float
+  latitude: Float
+}
+
+enum PaceEnum {
+  FAST
+  MODERATE
+  SLOW
+}
+
+type Photos {
+  id: ID! @unique
+  trip: Trip!
+  author: User
+  url: String!
+  caption: String
+}
+
+type Stop {
+  id: ID! @unique
+  trip: [Trip!]!
+  destination: String!
+  description: String
+  cost: Float
+  completed: Boolean!
+  completedAt: DateTime!
+}

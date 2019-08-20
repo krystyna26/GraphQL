@@ -5,6 +5,7 @@ type Query {
   comments: [Comment!]!
   me: User!
   post(id: ID!): Post!
+  myTrips(query: String): [Trip!]!
 }
 
 type Mutation {
@@ -42,7 +43,6 @@ input LoginUserInput {
   email: String!
   password: String!
 }
-
 
 input UpdateUserInput {
   name: String

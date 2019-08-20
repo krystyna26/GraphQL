@@ -1,8 +1,9 @@
 // import uuidv4 from "uuid/v4";
-import bcrypt from 'bcryptjs';
-import  generatedToken  from '../utils/generateToken';
-import getUserId from '../utils/getUserId';
-import hashPassword from '../utils/hashPassword';
+import bcrypt from "bcryptjs";
+import generatedToken from "../utils/generateToken";
+import getUserId from "../utils/getUserId";
+import hashPassword from "../utils/hashPassword";
+import dayjs from "dayjs";
 
 // const token = jwt.sign({ id : 46 }, 'mysecret');
 // console.log(token);
@@ -13,41 +14,44 @@ import hashPassword from '../utils/hashPassword';
 // const decoded2 = jwt.verify(token, 'mysecret');
 // console.log(decoded2);
 
+var moment = require("moment");
+
 const Mutation = {
-  async login(parent, args, {prisma}, info) {
+  async login(parent, args, { prisma }, info) {
     const userExist = await prisma.query.user({
       where: {
         email: args.data.email
       }
     });
 
-    if(!userExist) {
-      throw new Error("No user found")
+    if (!userExist) {
+      throw new Error("No user found");
     }
 
-    const isMatch = await bcrypt.compare(args.data.password, userExist.password)
-    if(!isMatch){
-      throw new Error("Password incorrect")
+    const isMatch = await bcrypt.compare(
+      args.data.password,
+      userExist.password
+    );
+    if (!isMatch) {
+      throw new Error("Password incorrect");
     }
 
     // shape has to match with AuthPayload shape
     return {
       user: userExist,
       token: generatedToken(userExist.id)
-    }
-    
+    };
   },
 
   async createUser(parent, args, { prisma }, info) {
-    const hashedPassword = await hashPassword(args.data.password)
+    const hashedPassword = await hashPassword(args.data.password);
 
-    const emailTaken = await prisma.exists.User({email: args.data.email})
+    const emailTaken = await prisma.exists.User({ email: args.data.email });
     if (emailTaken) {
-          throw new Error("Email taken.");
-        }
+      throw new Error("Email taken.");
+    }
 
-    const user = await prisma.mutation.createUser({ 
-
+    const user = await prisma.mutation.createUser({
       data: {
         ...args.data,
         password: hashedPassword
@@ -55,10 +59,10 @@ const Mutation = {
     });
 
     return {
-      user, 
+      user,
       token: generatedToken(user.id)
     };
-      // ~~~~~~~~~~~~~~~~~~
+    // ~~~~~~~~~~~~~~~~~~
     // const emailTaken = db.users.some(user => user.email === args.data.email);
     // console.log(emailTaken);
     // if (emailTaken) {
@@ -92,21 +96,23 @@ const Mutation = {
 
     // this console you can see in terminal
     // console.log(args);
-
   },
 
   async deleteUser(parent, args, { db, prisma, request }, info) {
     const userID = getUserId(request);
 
-    const userExists = await prisma.exists.User({ id: args.id })
-     if (!userExists) {
+    const userExists = await prisma.exists.User({ id: args.id });
+    if (!userExists) {
       throw new Error(" User not found");
     }
-    return await prisma.mutation.deleteUser({
-      where: {
-        id: userID
-      }
-    }, info);
+    return await prisma.mutation.deleteUser(
+      {
+        where: {
+          id: userID
+        }
+      },
+      info
+    );
     // const userIndex = db.users.findIndex(user => {
     //   return user.id === args.id;
     // });
@@ -137,19 +143,21 @@ const Mutation = {
   },
 
   async updateUser(parent, args, { db, prisma, request }, info) {
-     const userId = getUserId(request);
+    const userId = getUserId(request);
 
-     if(typeof args.data.password === 'string') {
-       args.data.password = await hashPassword(args.data.password)
-     }
+    if (typeof args.data.password === "string") {
+      args.data.password = await hashPassword(args.data.password);
+    }
 
-
-    return prisma.mutation.updateUser({
-      where: {
-        id: userId
+    return prisma.mutation.updateUser(
+      {
+        where: {
+          id: userId
+        },
+        data: args.data
       },
-      data: args.data
-    }, info)
+      info
+    );
 
     // destructured args
     // const { id, data } = args;
@@ -180,23 +188,25 @@ const Mutation = {
     // return user;
   },
 
-   createPost(parent, args, { db, pubsub, prisma, request }, info) {
-
+  createPost(parent, args, { db, pubsub, prisma, request }, info) {
     const userId = getUserId(request);
 
-    return prisma.mutation.createPost({
-      data:{
-        title: args.data.title,
-        body: args.data.body,
-        published: args.data.published,
-        author: {
-          connect: {
-            id: userId
+    return prisma.mutation.createPost(
+      {
+        data: {
+          title: args.data.title,
+          body: args.data.body,
+          published: args.data.published,
+          author: {
+            connect: {
+              id: userId
+            }
           }
         }
-      }
-    }, info)
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      },
+      info
+    );
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // const userExists = db.users.some(user => user.id === args.data.author);
 
     // if (!userExists) {
@@ -226,33 +236,39 @@ const Mutation = {
   },
 
   async updatePost(parent, args, { db, pubsub, prisma, request }, info) {
-     const userId = getUserId(request);
+    const userId = getUserId(request);
 
-     const postExists = await prisma.exists.Post({
-       id: args.id,
-       author:{
-         id: userId
-       }
+    const postExists = await prisma.exists.Post({
+      id: args.id,
+      author: {
+        id: userId
+      }
+    });
 
-     });
+    // delete all comments when unpublishing a post
+    const isPublished = await prisma.exists.Post({
+      id: args.id,
+      published: true
+    });
+    if (isPublished && args.data.published === false) {
+      await prisma.mutation.deleteManyComments({
+        where: { post: { id: args.id } }
+      });
+    }
 
-     // delete all comments when unpublishing a post
-     const isPublished  = await prisma.exists.Post({ id: args.id, published: true});
-     if(isPublished && args.data.published === false){
-       await prisma.mutation.deleteManyComments({ where : { post: { id: args.id } } })
-     }
+    if (!postExists) {
+      throw new Error("Post does not exist for this user");
+    }
 
-     if(!postExists){
-       throw new Error("Post does not exist for this user")
-     };
-
-     
-    return prisma.mutation.updatePost({
-      where: {
-        id: args.id
+    return prisma.mutation.updatePost(
+      {
+        where: {
+          id: args.id
+        },
+        data: args.data
       },
-      data: args.data
-    },info)
+      info
+    );
     // title, body, published
     // const { id, data } = args;
     // const post = db.posts.find(post => post.id === id);
@@ -309,17 +325,20 @@ const Mutation = {
       author: {
         id: userId
       }
-    })
+    });
 
-    if(!postExists){
-      throw new Error("Operation failed")
-    };
+    if (!postExists) {
+      throw new Error("Operation failed");
+    }
 
-    return prisma.mutation.deletePost({
-      where: {
-        id: args.id
-      }
-    }, info)
+    return prisma.mutation.deletePost(
+      {
+        where: {
+          id: args.id
+        }
+      },
+      info
+    );
 
     // check if post exist
     // const postIndex = db.posts.findIndex(post => post.id === args.id);
@@ -351,7 +370,6 @@ const Mutation = {
     // return post;
   },
 
-  
   async createComment(parent, args, { db, pubsub, prisma, request }, info) {
     const userId = getUserId(request);
 
@@ -359,13 +377,13 @@ const Mutation = {
     const postExists = await prisma.exists.Post({
       id: args.data.post,
       published: true
-    })
-    if(!postExists){
-      throw new Error("Post does not exist")
+    });
+    if (!postExists) {
+      throw new Error("Post does not exist");
     }
 
-    // 
-    
+    //
+
     return prisma.mutation.createComment({
       data: {
         text: args.data.text,
@@ -380,7 +398,7 @@ const Mutation = {
           }
         }
       }
-    })
+    });
 
     // console.log('users', db)
     // const userExists = db.users.some(user => user.id === args.data.author);
@@ -416,20 +434,24 @@ const Mutation = {
     const userId = getUserId(request);
 
     const commentExists = await prisma.exists.Comment({
-        id: args.id,
-        author: {
-          id: userId
-        }
+      id: args.id,
+      author: {
+        id: userId
+      }
     });
 
-    if(!commentExists){
-      throw new Error("Unable to delete this comment")
-    };
+    if (!commentExists) {
+      throw new Error("Unable to delete this comment");
+    }
 
-    return prisma.mutation.deleteComment({
-      where: {
-        id: args.id,
-      }}, info)
+    return prisma.mutation.deleteComment(
+      {
+        where: {
+          id: args.id
+        }
+      },
+      info
+    );
     // const commentIndex = db.comments.findIndex(
     //   comment => comment.id === args.id
     // );
@@ -455,18 +477,21 @@ const Mutation = {
       author: {
         id: userId
       }
-    })
+    });
 
-    if(!commentExists){
-      throw new Error("Unable to update comment")
+    if (!commentExists) {
+      throw new Error("Unable to update comment");
     }
 
-    return prisma.mutation.updateComment({
-      data: args.data,
-      where: {
-        id: args.id
-      }
-    }, info)
+    return prisma.mutation.updateComment(
+      {
+        data: args.data,
+        where: {
+          id: args.id
+        }
+      },
+      info
+    );
     // const { id, data } = args;
     // const commentExists = db.comments.find(comment => comment.id === id);
 
@@ -487,6 +512,19 @@ const Mutation = {
 
     // return commentExists;
   }
+
+  // createTrip(parent, args, { db, prisma, request }, info) {
+  // const ds = dayjs(args.data.travel_started_at);
+  // const de = dayjs(args.data.travel_ended_at);
+  // return prisma.mutation.createTrip({
+  //   travel_started_at: ds.format("MM-DD-YYYY"),
+  //   travel_ended_at: de.format("MM-DD-YYYY")
+  // });
+  //   return prisma.mutation.createTrip({
+  //     travel_started_at: moment(args.data.travel_started_at).format(),
+  //     travel_ended_at: moment(args.data.travel_ended_at).format()
+  //   });
+  // }
 };
 
 export { Mutation as default };

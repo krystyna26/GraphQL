@@ -1,9 +1,26 @@
 # GraphQL
+Create folder for your project and subfolder. From subfolder run: 
+npm init
+npm install babel-cli babel-preset-env
+Create file .babelrc with config inside:
+```
+{
+  "presets": ["env"]
+}
+```
 
-Create folder for your project. Inside it run: npm init with default values
+create /src folder and index.js file in it and console.log something 
+
+in package.json add this  "start": "babel-node src/index.js", to scripts object.
+
+run: `npm run start` and you should see your console text
 
 
-run `npm start`
+npm i graphql-yoga
+
+npm jwt
+npm bcrypt
+
 
 go to `localhost:4000` and try writing some queries:
 
@@ -48,13 +65,20 @@ subscription {
         id
         name
 
+installing prisma: npm install -g prisma@1.12.0
 
-
-INSTALLING PRISMA
-Run: npm install -g prisma@1.12.0
-
-START NEW PROJECT
-from graphql-prisma directory run: prisma init prisma (to create 3 files in graphql-prisma), with arrow choose: 'use existing db', postgresql, no, grab 'host', 'port', 'user' and 'password', number and 'name' from heroku, hit yes for use SSL, do not generate, schema.graphql
+from graphql-prisma directory run: 
+```
+prisma init prisma
+``` 
+(to create 3 files in graphql-prisma), with arrow choose: 
+'use existing db', 
+postgresql, 
+no, 
+grab 'host', 'port', 'user' and 'password', number and 'name' from heroku, 
+hit yes for use SSL, 
+do not generate, 
+schema.graphql
 
 inside the project the file 'datamodel.graphql' is similar to schema.graphql
 
@@ -114,9 +138,7 @@ updateUser(
 
 In 'datamodel.graphql' we can set customer type of user. After that we need to run 'prisma deploy' to update schema
 
-CREATING NEW PROJECT:
-Duplicate prisma folder. Delete docker-compose file. We need only one. Change endpoint in prisma.yml for example:
-endpoint: ```http://localhost:4466/traveler/default``` where traveler is a service name( project name), default is a stage name.
+
 
 ```
 type User {
@@ -186,7 +208,7 @@ type Stop {
 }
 ```
 
-DEBUGGING:
+DEBUGING:
 
 If you keep getting errors like: `ERROR: relation "default$default.User" does not exist` when I try to deploy prisma run:
 `prisma delete` command to clean that up. It's essentially the opposite of prisma deploy. After, you should be able to deploy again
@@ -195,7 +217,7 @@ If you keep getting errors like: `ERROR: relation "default$default.User" does no
 If after deploying `$ prisma deploy` you see   `Could not connect to server at http://localhost:4466. Please check if your server is running.` check if you change `schema: schema.graphql` in docker-compose.yml file to  `ssl: true`
  
 `npm ERR! enoent ENOENT: no such file or directory, open...`
-Always check if you're in right directory /prisma
+Always check if you're in right direcories /prisma
 
 INSTALLING prisma-binding:
 
@@ -230,6 +252,7 @@ in graphql-prisma create new file: `.graphqlconfig` and paste:
 }
 ```
 
+=======
 create folder `generated` under /src directory
 
 
@@ -262,3 +285,4 @@ Redeploy prisma
 Take in password -> validate password -> hash password -> generate auth token
 
 https://xd.adobe.com/view/b8261d75-dcfe-446c-4a1e-bb20f600d84c-ce17/screen/bba7cc4e-5990-482d-b6e7-334b03950d92/Web-1366-8
+

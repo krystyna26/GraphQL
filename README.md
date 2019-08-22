@@ -1,7 +1,9 @@
 # GraphQL
 Create folder for your project and subfolder. From subfolder run: 
+```
 npm init
 npm install babel-cli babel-preset-env
+```
 Create file .babelrc with config inside:
 ```
 {
@@ -9,20 +11,55 @@ Create file .babelrc with config inside:
 }
 ```
 
-create /src folder and index.js file in it and console.log something 
+create `/src` folder and `index.js` file in it and console.log something 
 
-in package.json add this  "start": "babel-node src/index.js", to scripts object.
+in package.json add this:  `"start": "babel-node src/index.js"` to the scripts object.
 
 run: `npm run start` and you should see your console text
 
-
+Install:
+```
 npm i graphql-yoga
-
+```
+```
 npm jwt
+```
+```
 npm bcrypt
+```
+In index.js put: 
+```
+import { GraphQLServer, PubSub } from "graphql-yoga";
+const typeDefs = `
+  type Query {
+    hello: String!
+  }
+`
+const resolvers  = {
+  Query: {
+    hello() {
+      return "This is my first query"
+    }
+  }
+}
+const server = new GraphQLServer({
+  typeDefs,
+  resolvers
+})
 
-
+server.start(() => {
+  console.log("Server is up.");
+})
+```
 go to `localhost:4000` and try writing some queries:
+```
+query { hello }
+```
+
+Add nodemon to package.json to refresh app automatically:
+"start" : "nodemon src/index.js --exec babel-node" to start application by running index.js nodemon through babel.
+
+
 
 ```
 query{
@@ -64,15 +101,17 @@ subscription {
       author {
         id
         name
+       }
+     }
+   }
+ }
+ ```
 
-installing prisma: npm install -g prisma@1.12.0
+Installing prisma: `npm install -g prisma@1.12.0`
 
-from graphql-prisma directory run: 
-```
-prisma init prisma
-``` 
-(to create 3 files in graphql-prisma), with arrow choose: 
-'use existing db', 
+from graphql-prisma directory run: `prisma init prisma` (to create 3 files in graphql-prisma). 
+With arrow choose: 
+use existing db, 
 postgresql, 
 no, 
 grab 'host', 'port', 'user' and 'password', number and 'name' from heroku, 
@@ -80,9 +119,9 @@ hit yes for use SSL,
 do not generate, 
 schema.graphql
 
-inside the project the file 'datamodel.graphql' is similar to schema.graphql
+Inside the project the file 'datamodel.graphql' is similar to schema.graphql
 
-in docker-compose.yml remove schema and change to ssl: true
+In docker-compose.yml remove schema and change to ssl: true
 
 ```
   1. Open folder: cd prisma
@@ -90,7 +129,7 @@ in docker-compose.yml remove schema and change to ssl: true
   3. Deploy your Prisma service: prisma deploy
 ```
 
-after that go to localhost:4466 (another instance of graphQL playground coneccted to graphQL API) and create new user mutation: 
+After that go to localhost:4466 (another instance of graphQL playground coneccted to graphQL API) and create new user mutation: 
 
 ```
 mutation {
@@ -103,12 +142,11 @@ name
 }
 }
 ```
-and run
+and run it.
 
-go to pgAdmin and refresh schema
-schema/defaults$defaults/Tables/User (right click view/edit data -> All rows)
+Go to pgAdmin and refresh schema: schema/defaults$defaults/Tables/User (right click view/edit data -> All rows)
 
-create another user in playground and refresh pgAdmin to see another user being added into db
+Create another user in playground and refresh pgAdmin to see another user being added into db
 
 new playground:
 ```
@@ -118,7 +156,7 @@ id
 name
 }}
 ```
-in response you should get all users (2 so far)
+in response you should get all users.
 
 ```
 mutation{
@@ -137,8 +175,6 @@ updateUser(
 ```
 
 In 'datamodel.graphql' we can set customer type of user. After that we need to run 'prisma deploy' to update schema
-
-
 
 ```
 type User {
@@ -219,6 +255,8 @@ If after deploying `$ prisma deploy` you see   `Could not connect to server at h
 `npm ERR! enoent ENOENT: no such file or directory, open...`
 Always check if you're in right direcories /prisma
 
+
+
 INSTALLING prisma-binding:
 
 from graphql-prisma directory install: `npm install prisma-binding`
@@ -265,22 +303,24 @@ In terminal run: `npm run get-schema`. That should create a file prisma.graphql 
 run `npm start` to start program
 
 ACCESS TO DB WITH TOKEN
-In  prisma.yml add: secret: <your_secret_string_here>
+In  prisma.yml add: `secret: <your_secret_string_here>`
 In prisma.js add the same secret into const prisma (but here with quotes!)
 To generate token needed to http request:
 `cd prisma`
 `prisma token`
 Copy and paste token to HTTP HEADERS in http://localhost:4466/ like:
+```
 {
   "Authorization":"Bearer <token_here>"
 }
+```
 And now you can have access to db again.
 
 -----
 Adding password field into User. 
-Delete prisma
-Add new property into object in .graphqlconfig: "prisma": "prisma/prisma.yml" and re-run: npm run get-schema
-Redeploy prisma
+Delete prisma: "`prisma delete`
+Add new property into object in .graphqlconfig: `"prisma": "prisma/prisma.yml"` and re-run: `npm run get-schema`
+Redeploy prisma: `prisma deploy`
 
 Take in password -> validate password -> hash password -> generate auth token
 
